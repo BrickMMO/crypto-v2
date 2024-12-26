@@ -1,0 +1,27 @@
+[
+    {
+        "url":"http://zulu.loot.brickmmo.com:7777",
+        "responsded_at":null,
+        "attempts":0
+    },
+    {
+        "url":"http://yankee.loot.brickmmo.com:7777",
+        "responsded_at":null,
+        "attempts":0
+    },
+    {
+        "url":"https://alpha.loot.brickmmo.com",
+        "responsded_at":null,
+        "attempts":0
+    },
+    {
+        "url":"https://bravo.loot.brickmmo.com",
+        "responsded_at":null,
+        "attempts":0
+    },
+    {
+        "url":"https://charlie.loot.brickmmo.com",
+        "responsded_at":null,
+        "attempts":0
+    }
+]
