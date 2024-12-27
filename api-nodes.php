@@ -15,6 +15,12 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: X-Requested-With");
 
+// Add calling node if needed
+if(isset($_GET['url']))
+{
+    nodes_add($_GET['url']);
+}
+
 // Feth curret list of local nodes
 $nodes = nodes_fetch();
 

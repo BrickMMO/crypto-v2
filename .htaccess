@@ -11,3 +11,5 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule api/nodes /api-nodes.php
 RewriteRule api/wallet /api-wallet.php
 RewriteRule api/transaction /api-transaction.php
+
+RewriteRule cron/find-nodes /cron-find-nodes.php

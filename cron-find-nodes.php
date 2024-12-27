@@ -1,14 +1,21 @@
 <?php
 
+/**
+ * /usr/local/bin/php -q /home/ikatsfn3/alpha.loot.brickmmo.com/cron-fond-nodes.php
+ * > /dev/null
+ */
+
 // Include config and function files
 include('includes/config.php');
 include('includes/functions.php');
 
 // Apply JSON headers
+/*
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: X-Requested-With");
+*/
 
 // Remove inactive nodes
 nodes_check_missing();
@@ -26,26 +33,29 @@ foreach($nodes as $key => $node)
 {
 
     // Define API URL
-    $url = $node['url'].'/api/nodes';
+    $url = $node['url'].'/api/nodes?url='.addslashes(DOMAIN);
 
     // Do not initiaate API call for self node
+    /*
     if($node['url'] == DOMAIN)
     {
         // Increment self stats
         $nodes_self ++;
         continue;
     }
+    */
 
     // Add CURL headers
     $headers[] = 'Content-type: application/json';
 
-    // Inisiate API call using CURL
+    // Initiate API call using CURL
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL,$url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 1000);
     $response = curl_exec($ch);
 
     // Check if API call was completed scessfully
@@ -62,7 +72,7 @@ foreach($nodes as $key => $node)
         // Increment found stats
         $nodes_found ++;
 
-        // MErge local nosde list with remote list
+        // Merge local nosde list with remote list
         $nodes = nodes_merge($nodes, json_decode($response, true));
 
     }

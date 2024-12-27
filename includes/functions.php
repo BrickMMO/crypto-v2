@@ -41,12 +41,24 @@ function nodes_fetch()
         $nodes = file_get_contents('nodes-genesis.json');
         $nodes = json_decode($nodes, true);
 
-        // Add itself to the node array
-        $nodes[] = array(
-            'url' => DOMAIN,
-            'responded_at' => null,
-            'attempts' => 0,
-        );
+        $self = false;
+
+        foreach($nodes as $key => $node)
+        {
+            if($node['url'] == DOMAIN) $self = true;
+        }
+
+        if($self == false)
+        {
+
+            // Add itself to the node array
+            $nodes[] = array(
+                'url' => DOMAIN,
+                'responded_at' => null,
+                'attempts' => 0,
+            );
+
+        }
 
     }
 
@@ -67,6 +79,46 @@ function nodes_set($nodes)
         json_encode($nodes)
     );
 
+}
+
+/**
+ * 
+ */
+function nodes_add($url)
+{
+
+    echo $url;
+    // Get a list of local nodes
+    $nodes = nodes_fetch();
+
+    // Define a boolean variable to track if this node should be aded to the 
+    // local list
+    $exists = false;
+
+    // Loop through local nodes
+    foreach($nodes as $key => $node)
+    {
+
+        // If node is alreay on the list, ignore the node
+        if($url == $node['url'])
+        {
+            $exists = true;
+        }
+
+    }
+
+    // If node is no to be ignored, add it to the local list
+    if($exists == false)
+    {
+        $nodes[] = array(
+            'url' => $url,
+            'responded_at' => null,
+            'attempts' => 0
+        );
+    }
+    
+    // Save revised node list to the nodes.json file
+    nodes_set($nodes);
 }
 
 /**
