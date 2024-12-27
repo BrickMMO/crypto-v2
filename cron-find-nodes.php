@@ -3,12 +3,14 @@
 include('includes/config.php');
 include('includes/functions.php');
 
+/*
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: X-Requested-With");
+*/
 
-$nodes = fetch_nodes();
+$nodes = nodes_fetch();
 
 $nodes_found = 0;
 $nodes_missing = 0;
@@ -40,7 +42,10 @@ foreach($nodes as $key => $node)
     {
 
         $nodes[$key]['responded_at'] = time();
+        $nodes[$key]['attempts'] = 0;
         $nodes_found ++;
+
+        $nodes = nodes_merge($nodes, json_decode($response, true));
 
     }
     else
@@ -61,7 +66,7 @@ foreach($nodes as $key => $node)
 
 }
 
-set_nodes($nodes);
+nodes_set($nodes);
 
 $data = array(
     'message' => 'Node list found.', 
