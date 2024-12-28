@@ -112,6 +112,8 @@ include('includes/functions.php');
 
       function timeAgo(date) {
 
+        if(!date) return '';
+
         let now = Math.round(new Date().getTime() / 1000);
         let seconds = Math.floor(now - date);
         let interval = seconds / 31536000;
