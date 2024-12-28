@@ -104,6 +104,8 @@ foreach($nodes as $key => $node)
     // Close CURL
     curl_close($ch);
 
+    sleep(1);
+
 }
 
 // Place data in array for JSON output
