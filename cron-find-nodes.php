@@ -33,17 +33,25 @@ foreach($nodes as $key => $node)
 {
 
     // Define API URL
-    $url = $node['url'].'/api/nodes?url='.addslashes(DOMAIN);
+    $url = $node['url'].'/api/nodes?url='.urlencode(DOMAIN);
 
     // Do not initiaate API call for self node
-    /*
     if($node['url'] == DOMAIN)
     {
+
+        // Update local node details
+        $nodes[$key]['responded_at'] = time();
+        $nodes[$key]['attempts'] = 0;
+
         // Increment self stats
         $nodes_self ++;
+
+        // Merge local nosde list with remote list
+        $nodes = nodes_merge($nodes, $nodes_remote);
+
         continue;
+        
     }
-    */
 
     // Add CURL headers
     $headers[] = 'Content-type: application/json';
@@ -64,7 +72,7 @@ foreach($nodes as $key => $node)
     // If sucessful
     if($code == 200)
     {
-
+        
         // Update local node details
         $nodes[$key]['responded_at'] = time();
         $nodes[$key]['attempts'] = 0;
@@ -73,7 +81,7 @@ foreach($nodes as $key => $node)
         $nodes_found ++;
 
         // Merge local nosde list with remote list
-        $nodes = nodes_merge($nodes, json_decode($response, true));
+        $nodes = nodes_merge($nodes, $nodes_remote);
 
     }
     else

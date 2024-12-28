@@ -40,6 +40,17 @@ include('includes/functions.php');
       img {
         margin-right: 10px;
       }
+
+      table {
+        border: 1px solid black;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      table td {
+        border: 1px solid black;
+        padding: 5px 10px;
+        text-align: left;
+      }
     </style>
 
     <link rel="stylesheet" href="https://cdn.brickmmo.com/exceptions@1.0.0/fontawesome.css" />
@@ -57,6 +68,7 @@ include('includes/functions.php');
         Genesis Node: 
         <strong><?=(GENESIS ? 'YES' : 'NO')?></strong>
       </p>
+      <table id="table-list"></table>
       <a href="https://briockmmo.com">
         <img
             src="https://cdn.brickmmo.com/images@1.0.0/brickmmo-logo-coloured-horizontal.png"
@@ -64,6 +76,61 @@ include('includes/functions.php');
         />
       </a>
     </main>
+
+    <script>
+
+      setInterval(function(){
+
+        let url = '/api/nodes';
+
+        fetch(url)
+        .then((response) => {
+          return response.json();
+        })
+        .then((nodes) => {
+          
+          let table = document.getElementById('table-list');
+          table.innerHTML = "";
+
+          for(let node of nodes)
+          {
+            let respondedAt = new Date(node.responded_at);
+            table.innerHTML += "<tr>" + 
+              "<td>" + node.url + "</td>" + 
+              "<td>" + timeAgo(node.responded_at) + "</td>" + 
+              "<td>" + 
+              (node.attempts == 0 ? "<i class=\"fa-solid fa-toggle-on\"></i>" : "<i class=\"fa-solid fa-toggle-off\"></i>") + 
+              "</td>" + 
+              "</tr>";
+          }
+          
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }, 5000);
+
+      function timeAgo(date) {
+
+        let now = Math.round(new Date().getTime() / 1000);
+        let seconds = Math.floor(now - date);
+        let interval = seconds / 31536000;
+
+        if (interval > 1) return Math.floor(interval) + " years";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " months";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " days";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " hours";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " minutes";
+
+        return Math.floor(seconds) + " seconds";
+
+      }
+
+    </script>
 
     <script src="https://kit.fontawesome.com/a74f41de6e.js" crossorigin="anonymous"></script>
   </body>

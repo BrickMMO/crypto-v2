@@ -87,7 +87,6 @@ function nodes_set($nodes)
 function nodes_add($url)
 {
 
-    echo $url;
     // Get a list of local nodes
     $nodes = nodes_fetch();
 
@@ -137,15 +136,14 @@ function nodes_merge($nodes_local, $nodes_remote)
     foreach($nodes_remote as $key => $node_new)
     {
 
-        // Define a boolean variable to track if this node should be aded to the 
-        // local list
+        // Define a boolean variable to track if this node should be aded to the
         $ignore = false;
 
         // Loop through local nodes
         foreach($nodes_local as $key => $node_check)
         {
 
-            // If node is alreay on the list, ignore the node
+            // If node is already on the list, ignore the node
             if($node_new['url'] == $node_check['url'])
             {
                 $ignore = true;
@@ -159,7 +157,7 @@ function nodes_merge($nodes_local, $nodes_remote)
 
         }
 
-        // If node is no to be ignored, add it to the local list
+        // If node is not to be ignored, add it to the local list
         if($ignore == false)
         {
             $nodes_local[] = $node_new;
@@ -167,7 +165,7 @@ function nodes_merge($nodes_local, $nodes_remote)
 
     }
 
-    // Retuen array of mergeed local list
+    // Retuen array of merged local list
     return $nodes_local;
 
 }
