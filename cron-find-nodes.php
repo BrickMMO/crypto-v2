@@ -10,12 +10,10 @@ include('includes/config.php');
 include('includes/functions.php');
 
 // Apply JSON headers
-/*
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: X-Requested-With");
-*/
 
 // Remove inactive nodes
 nodes_check_missing();
@@ -39,6 +37,8 @@ foreach($nodes as $key => $node)
     if($node['url'] == DOMAIN)
     {
 
+        $nodes_remote = json_decode($response, true);
+        
         // Update local node details
         $nodes[$key]['responded_at'] = time();
         $nodes[$key]['attempts'] = 0;

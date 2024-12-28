@@ -15,6 +15,13 @@ include('includes/functions.php');
   <head>
     <title><?=NAME?></title>
     <style>
+      a:link,
+      a:active,
+      a:visited,
+      a:hover {
+        color: #2830ce;
+        text-decoration: none;
+      }
       html,
       body {
         display: flex;
@@ -94,12 +101,13 @@ include('includes/functions.php');
 
           for(let node of nodes)
           {
+            let ago = timeAgo(node.responded_at);
             let respondedAt = new Date(node.responded_at);
             table.innerHTML += "<tr>" + 
-              "<td>" + node.url + "</td>" + 
-              "<td>" + timeAgo(node.responded_at) + "</td>" + 
+              "<td><a href=\"" + node.url + "\">" + node.url + "</a></td>" + 
+              "<td>" + ago + "</td>" + 
               "<td>" + 
-              (node.attempts == 0 ? "<i class=\"fa-solid fa-toggle-on\"></i>" : "<i class=\"fa-solid fa-toggle-off\"></i>") + 
+              ((node.attempts == 0 || ago == '') ? "<i class=\"fa-solid fa-toggle-on\"></i>" : "<i class=\"fa-solid fa-toggle-off\"></i>") + 
               "</td>" + 
               "</tr>";
           }
