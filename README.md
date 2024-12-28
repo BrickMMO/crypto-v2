@@ -21,6 +21,25 @@ The first three genesis nodes are available at:
 - https://bravo.loot.brickmmo.com
 - https://charlie.loot.brickmmo.com
 
+## Node Installation
+
+To setup a new node follow these steps:
+
+1. Choose a new domain/subdomain to host the node.
+2. Setup hosting for this new domain/subdomain. The hosting will require PHP and mod_rewrite.
+3. Upload this repo to the new hosting public folder. You do not need to include the following files:
+  - .gitignore
+  - .env.sample
+  - README.md
+4. Edit the `.env` file with the new domain/subdomain and node name.
+5. Add the following cron job to your server and run once poer minute:
+
+```
+wget -qO- https://<DOMAIN></cron/find-nodes >/dev/null 2>&1
+```
+
+6. Open `https://<YOUR_DOMAIN>` and https://alpha.loot.brickmmo.com/ and wait for your new node to be registered.
+
 ---
 
 ## Project Stack
