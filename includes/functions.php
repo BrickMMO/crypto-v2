@@ -191,9 +191,11 @@ function nodes_check_missing()
 
         // If node has not responded over 50 timers, or has not responded in over 
         // 24 hours, remove the node from the list
-        if(($node['responded_at'] == 0 || $time - $node['responded_at'] > 60 * 60 * 24) && $node['attempts'] >= 50)
+        if(($node['responded_at'] == 0 || $time - $node['responded_at'] > 60 * 60 * 12) && $node['attempts'] >= 50)
         {
 
+            // Remove node
+            
         }
         else
         {

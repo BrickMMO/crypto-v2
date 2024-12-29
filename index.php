@@ -52,6 +52,7 @@ include('includes/functions.php');
         border: 1px solid black;
         border-collapse: collapse;
         margin-bottom: 20px;
+        font-size: 80%;
       }
       table td {
         border: 1px solid black;
