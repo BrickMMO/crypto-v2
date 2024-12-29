@@ -31,6 +31,9 @@ $nodes_self = 0;
 foreach($nodes_local as $key => $node)
 {
 
+    // Define API URL
+    $url = $node['url'].'/api/nodes?url='.urlencode(DOMAIN);
+    
     // Do not initiaate API call for self node
     if($node['url'] == DOMAIN)
     {
@@ -45,9 +48,6 @@ foreach($nodes_local as $key => $node)
     }
     else
     {
-
-        // Define API URL
-        $url = $node['url'].'/api/nodes?url='.urlencode(DOMAIN);
 
         // Add CURL headers
         $headers[] = 'Content-type: application/json';
