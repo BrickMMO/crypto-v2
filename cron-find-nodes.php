@@ -19,7 +19,8 @@ header("Access-Control-Allow-Headers: X-Requested-With");
 nodes_check_missing();
 
 // Fetch local nodes
-$nodes = nodes_fetch();
+$nodes_local = nodes_fetch();
+$nodes_remote = array();
 
 // Define variables to store how many nodes are found, missing, or self
 $nodes_found = 0;
@@ -27,86 +28,83 @@ $nodes_missing = 0;
 $nodes_self = 0;
 
 // Loop through each local node
-foreach($nodes as $key => $node)
+foreach($nodes_local as $key => $node)
 {
-
-    // Define API URL
-    $url = $node['url'].'/api/nodes?url='.urlencode(DOMAIN);
 
     // Do not initiaate API call for self node
     if($node['url'] == DOMAIN)
     {
-
-        $nodes_remote = json_decode($response, true);
         
         // Update local node details
-        $nodes[$key]['responded_at'] = time();
-        $nodes[$key]['attempts'] = 0;
+        $nodes_local[$key]['responded_at'] = time();
+        $nodes_local[$key]['attempts'] = 0;
 
         // Increment self stats
         $nodes_self ++;
-
-        // Merge local nosde list with remote list
-        $nodes = nodes_merge($nodes, $nodes_remote);
-
-        continue;
         
-    }
-
-    // Add CURL headers
-    $headers[] = 'Content-type: application/json';
-
-    // Initiate API call using CURL
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL,$url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 1000);
-    $response = curl_exec($ch);
-
-    // Check if API call was completed scessfully
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    // If sucessful
-    if($code == 200)
-    {
-        
-        // Update local node details
-        $nodes[$key]['responded_at'] = time();
-        $nodes[$key]['attempts'] = 0;
-
-        // Increment found stats
-        $nodes_found ++;
-
-        // Merge local nosde list with remote list
-        $nodes = nodes_merge($nodes, $nodes_remote);
-
     }
     else
     {
 
-        // Increemtn attemtps to remove inactive nodes in the future
-        $nodes[$key]['attempts'] += 1;
+        // Define API URL
+        $url = $node['url'].'/api/nodes?url='.urlencode(DOMAIN);
 
-        // Increment missing stats
-        $nodes_missing ++;
+        // Add CURL headers
+        $headers[] = 'Content-type: application/json';
+
+        // Initiate API call using CURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, 1000);
+        $response = curl_exec($ch);
+
+        // Check if API call was completed scessfully
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        // If sucessful
+        if($code == 200)
+        {
+            
+            // Update local node details
+            $nodes_local[$key]['responded_at'] = time();
+            $nodes_local[$key]['attempts'] = 0;
+
+            // Increment found stats
+            $nodes_found ++;
+
+            // Merge local nosde list with remote list
+            $nodes_remote = array_merge($nodes_remote, json_decode($response, true));
+
+        }
+        else
+        {
+
+            // Increemtn attemtps to remove inactive nodes in the future
+            $nodes_local[$key]['attempts'] += 1;
+
+            // Increment missing stats
+            $nodes_missing ++;
+
+        }
+
+        // Close CURL
+        curl_close($ch);
+
+        // Slow script down to generate different time in node list
+        sleep(1);
 
     }
 
-    /*
-    echo 'Code: '.$code.'<br>';
-    echo 'Error: '.curl_error($ch).'<br>';
-    echo '<hr>';
-    */
-
-    // Close CURL
-    curl_close($ch);
-
-    sleep(1);
+    nodes_set($nodes_local);
 
 }
+
+// Check list of remote nodes for nodes that need to be added to the local list.
+nodes_add($nodes_remote, $nodes_local);
 
 // Place data in array for JSON output
 $data = array(
@@ -115,11 +113,7 @@ $data = array(
     'nodes_found' => $nodes_found,
     'nodes_missing' => $nodes_missing,
     'nodes_self' => $nodes_self,
-    'nodes_new' => count($nodes) - count(nodes_fetch()),
 );
-
-// Save revised local lsit to nodes.json
-nodes_set($nodes);
 
 // Output local list of nodes using JSON 
 echo json_encode($data);

@@ -28,8 +28,8 @@ function nodes_fetch()
     {
 
         // Open nodes.json and convert contents to an array
-        $nodes = file_get_contents('nodes.json');
-        $nodes = json_decode($nodes, true);
+        $nodes_local = file_get_contents('nodes.json');
+        $nodes_local = json_decode($nodes_local, true);
 
     }
 
@@ -37,33 +37,40 @@ function nodes_fetch()
     else
     {
 
-        // Open nodes-genesis.json and convert contents to an array// Open file 
-        $nodes = file_get_contents('nodes-genesis.json');
-        $nodes = json_decode($nodes, true);
+        // Open nodes-genesis.json and convert contents to an array
+        $nodes_local = file_get_contents('nodes-genesis.json');
+        $nodes_local = json_decode($nodes_local, true);
 
+        // Check if self is on the list
         $self = false;
 
-        foreach($nodes as $key => $node)
+        // Loop through nodes
+        foreach($nodes_local as $key => $node)
         {
-            if($node['url'] == DOMAIN) $self = true;
+            // Check if self is in the list of nodes
+            if($nodes_local['url'] == DOMAIN) $self = true;
         }
 
+        // If self is not in the list, add self to the list
         if($self == false)
         {
 
             // Add itself to the node array
-            $nodes[] = array(
+            $nodes_local[] = array(
                 'url' => DOMAIN,
                 'responded_at' => null,
                 'attempts' => 0,
             );
+
+            // Save nodes to local json
+            nodes_set($nodes_local);
 
         }
 
     }
 
     // Return an array of nodes
-    return $nodes;
+    return $nodes_local;
 
 }
 
@@ -71,53 +78,42 @@ function nodes_fetch()
  * Saves a node list to nodes.json file.
  * @param array $nodes an array of current nodes
  */
-function nodes_set($nodes)
+function nodes_set($nodes_local)
 {
 
     file_put_contents(
         'nodes.json',
-        json_encode($nodes)
+        json_encode($nodes_local)
     );
 
 }
 
 /**
- * 
+ * This function checks a URL to see if the node exists in the local
+ * list of nodes.
+ * @param string $url of the new node to check
+ * @param array $nodes an array of current nodes
+ * @return boolean A true or false based on node existing
  */
-function nodes_add($url)
+function nodes_exist($url, $nodes_local = false)
 {
 
-    // Get a list of local nodes
-    $nodes = nodes_fetch();
-
-    // Define a boolean variable to track if this node should be aded to the 
-    // local list
-    $exists = false;
+    if(!$nodes_local) $nodes_local = nodes_fetch();
 
     // Loop through local nodes
-    foreach($nodes as $key => $node)
+    foreach($nodes_local as $key => $node)
     {
 
-        // If node is alreay on the list, ignore the node
-        if($url == $node['url'])
+        // Check if node is in the local list
+        if($node['url'] == $url)
         {
-            $exists = true;
+            return true;
         }
 
     }
 
-    // If node is no to be ignored, add it to the local list
-    if($exists == false)
-    {
-        $nodes[] = array(
-            'url' => $url,
-            'responded_at' => null,
-            'attempts' => 0
-        );
-    }
-    
-    // Save revised node list to the nodes.json file
-    nodes_set($nodes);
+    return false;
+
 }
 
 /**
@@ -126,47 +122,40 @@ function nodes_add($url)
  * @param array $nodes_remote array of nodes from a remote node
  * @return array An array of merged nodes
  */
-function nodes_merge($nodes_local, $nodes_remote)
+function nodes_add($nodes_remote, $nodes_local = false)
 {
 
+    // Check if remote nodes are provided as an array
+    if(!is_array($nodes_remote))
+    {
+        $nodes_remote[] = array(
+            'url' => $nodes_remote,
+            'responded_at' => null,
+            'attempts' => 0
+        );
+    }
+    
     // Create an array to store new nodes
-    $nodes_new = array();
+    if(!$nodes_local) $nodes_local = nodes_fetch();
 
     // Loop through the remote nodes list
     foreach($nodes_remote as $key => $node_new)
     {
 
-        // Define a boolean variable to track if this node should be aded to the
-        $ignore = false;
-
-        // Loop through local nodes
-        foreach($nodes_local as $key => $node_check)
+        if(!nodes_exist($node_new['url'], $nodes_local))
         {
+            
+            $nodes_local[] = array(
+                'url' => $node_new['url'],
+                'responded_at' => null,
+                'attempts' => 0
+            );
 
-            // If node is already on the list, ignore the node
-            if($node_new['url'] == $node_check['url'])
-            {
-                $ignore = true;
-            }
-
-            // If attempts if over 50, ignore the node
-            if($node_new['attempts'] >= 50)
-            {
-                $ignore = true;
-            }
-
-        }
-
-        // If node is not to be ignored, add it to the local list
-        if($ignore == false)
-        {
-            $nodes_local[] = $node_new;
         }
 
     }
 
-    // Retuen array of merged local list
-    return $nodes_local;
+    nodes_set($nodes_local);
 
 }
 
@@ -177,7 +166,7 @@ function nodes_check_missing()
 {
 
     // Get a list of local nodes
-    $nodes = nodes_fetch();
+    $nodes_local = nodes_fetch();
 
     // Define an aray of nodes to keep on the local list
     $nodes_keep = array();
@@ -186,7 +175,7 @@ function nodes_check_missing()
     $time = time();
 
     // Loop through the list of local nodes
-    foreach($nodes as $key => $node)
+    foreach($nodes_local as $key => $node)
     {
 
         // If node has not responded over 50 timers, or has not responded in over 
