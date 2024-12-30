@@ -47,8 +47,10 @@ function nodes_fetch()
         // Loop through nodes
         foreach($nodes_local as $key => $node)
         {
+            
             // Check if self is in the list of nodes
-            if($nodes_local['url'] == DOMAIN) $self = true;
+            if($node['url'] == DOMAIN) $self = true;
+            
         }
 
         // If self is not in the list, add self to the list
@@ -128,11 +130,11 @@ function nodes_add($nodes_remote, $nodes_local = false)
     // Check if remote nodes are provided as an array
     if(!is_array($nodes_remote))
     {
-        $nodes_remote[] = array(
+        $nodes_remote = array(array(
             'url' => $nodes_remote,
             'responded_at' => null,
             'attempts' => 0
-        );
+        ));
     }
     
     // Create an array to store new nodes
