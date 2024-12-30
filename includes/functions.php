@@ -130,6 +130,7 @@ function nodes_add($nodes_remote, $nodes_local = false)
     // Check if remote nodes are provided as an array
     if(!is_array($nodes_remote))
     {
+
         $nodes_remote = array(array(
             'url' => $nodes_remote,
             'responded_at' => null,
@@ -137,21 +138,26 @@ function nodes_add($nodes_remote, $nodes_local = false)
         ));
     }
     
-    // Create an array to store new nodes
+    // If no parameter nodes use local nodes
     if(!$nodes_local) $nodes_local = nodes_fetch();
 
     // Loop through the remote nodes list
     foreach($nodes_remote as $key => $node_new)
     {
 
-        if(!nodes_exist($node_new['url'], $nodes_local))
+        if(filter_var($node_new['url'], FILTER_VALIDATE_URL))
         {
-            
-            $nodes_local[] = array(
-                'url' => $node_new['url'],
-                'responded_at' => null,
-                'attempts' => 0
-            );
+
+            if(!nodes_exist($node_new['url'], $nodes_local))
+            {
+                
+                $nodes_local[] = array(
+                    'url' => $node_new['url'],
+                    'responded_at' => null,
+                    'attempts' => 0
+                );
+
+            }
 
         }
 

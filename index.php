@@ -13,15 +13,11 @@ include('includes/functions.php');
 <!DOCTYPE html>
 <html lang="en">
   <head>
+
     <title><?=NAME?></title>
+    
     <style>
-      a:link,
-      a:active,
-      a:visited,
-      a:hover {
-        color: #2830ce;
-        text-decoration: none;
-      }
+
       html,
       body {
         display: flex;
@@ -34,6 +30,14 @@ include('includes/functions.php');
         font-family: "Courier New", Courier, monospace;
         text-align: center;
         background-color: #e4ede9;
+      }
+
+      a:link,
+      a:active,
+      a:visited,
+      a:hover {
+        color: #2830ce;
+        text-decoration: none;
       }
 
       h2 {
@@ -54,16 +58,20 @@ include('includes/functions.php');
         margin-bottom: 20px;
         font-size: 80%;
       }
+
       table td {
         border: 1px solid black;
         padding: 5px 10px;
         text-align: left;
       }
+
     </style>
 
     <link rel="stylesheet" href="https://cdn.brickmmo.com/exceptions@1.0.0/fontawesome.css" />
+
   </head>
   <body>
+    
     <main>
       <a href="https://loot.brickmmo.com">
         <img src="loot-logo.png" width="300">
@@ -87,13 +95,16 @@ include('includes/functions.php');
 
     <script>
 
-      setInterval(function(){
+      function loadNodes()
+      {
 
         let url = '/api/nodes';
 
         fetch(url)
         .then((response) => {
+
           return response.json();
+
         })
         .then((nodes) => {
           
@@ -102,6 +113,7 @@ include('includes/functions.php');
 
           for(let node of nodes)
           {
+
             let ago = timeAgo(node.responded_at);
             let respondedAt = new Date(node.responded_at);
             table.innerHTML += "<tr>" + 
@@ -111,13 +123,19 @@ include('includes/functions.php');
               ((node.attempts == 0 || ago == '') ? "<i class=\"fa-solid fa-toggle-on\"></i>" : "<i class=\"fa-solid fa-toggle-off\"></i>") + 
               "</td>" + 
               "</tr>";
+
           }
           
         })
         .catch((error) => {
+
           console.log(error);
+
         });
-      }, 5000);
+
+        setTimeout(loadNodes, 5000);
+
+      }
 
       function timeAgo(date) {
 
@@ -140,6 +158,12 @@ include('includes/functions.php');
         return Math.floor(seconds) + " seconds";
 
       }
+
+      (function() {
+
+        loadNodes();
+
+      })();
 
     </script>
 
