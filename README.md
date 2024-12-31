@@ -2,6 +2,8 @@
 
 A basic PHP crypto coin for use in the BrickMMO Smart City Development Platform (SCDP).
 
+<img src="https://branding.brickmmo.com/loot/Loot_Logo.jpg" width="300">
+
 The following resources were used as research for this project
 
 - https://dev.to/enter?state=new-user&bb=123191
