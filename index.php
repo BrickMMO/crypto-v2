@@ -85,7 +85,7 @@ include('includes/functions.php');
         <strong><?=(GENESIS ? 'YES' : 'NO')?></strong>
       </p>
       <table id="table-list"></table>
-      <a href="https://briockmmo.com">
+      <a href="https://brickmmo.com">
         <img
             src="https://cdn.brickmmo.com/images@1.0.0/brickmmo-logo-coloured-horizontal.png"
             width="100"
