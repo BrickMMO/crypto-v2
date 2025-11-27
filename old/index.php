@@ -79,10 +79,10 @@ include('includes/functions.php');
       <h1><?=NAME?></h1>
       <p>
         Domain:
-        <strong><?=DOMAIN?></strong>
+        <span class="w3-bold"><?=DOMAIN?></span>
         <br />
         Genesis Node: 
-        <strong><?=(GENESIS ? 'YES' : 'NO')?></strong>
+        <span class="w3-bold"><?=(GENESIS ? 'YES' : 'NO')?></span>
       </p>
       <table id="table-list"></table>
       <a href="https://brickmmo.com">
